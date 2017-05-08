@@ -66,12 +66,12 @@ type FrameSequence []*FrameInfo
 func ReadFile(path string) (FrameSequence, error) {
 	b, err := ioutil.ReadFile(path)
 	if err != nil {
-	    return nil, err
-    }
+		return nil, err
+    	}
 	seq := make(FrameSequence, 0)
 	if err := csv.Unmarshal(b, &seq); err != nil {
-	    return nil, err
-    }
+		return nil, err
+	}
 	return seq, nil
 }
 ```
@@ -81,14 +81,14 @@ func ReadFile(path string) (FrameSequence, error) {
 func ReadFileUnknown(path string) (FrameSequence, error) {
 	f, err := os.Open(path)
 	if err != nil {
-	    return nil, err
-    }
-    defer f.Close()
+		return nil, err
+	}
+    	defer f.Close()
 	dec := csv.NewDecoder(f).SkipUnknown(false)
 	c := make(FrameSequence, 0)
 	if err := dec.Decode(&c); err != nil {
-	    return nil, err
-    }
+		return nil, err
+    	}
 	return c, nil
 }
 ```
@@ -105,13 +105,13 @@ func ReadFileIntoMap(path string) (GenericCSV, error) {
 	f, err := os.Open(path)
 	if err != nil {
 	    return nil, err
-    }
-    defer f.Close()
+    	}
+    	defer f.Close()
 	dec := csv.NewDecoder(f)
 	c := make(GenericCSV, 0)
 	if err := dec.Decode(&c); err != nil {
 	    return nil, err
-    }
+    	}
 	return c, nil
 }
 ```
