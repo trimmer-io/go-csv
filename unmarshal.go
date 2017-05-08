@@ -155,7 +155,7 @@ func (d *Decoder) Buffer(buf []byte) *Decoder {
 // Unmarshal parses CSV encoded data and stores the result in the slice v.
 //
 // Unmarshal allocates new slice elements for each CSV record encountered
-// in the input. The first first non-empty and non-commented line of input
+// in the input. The first non-empty and non-commented line of input
 // is expected to contain a CSV header that will be used to map the order
 // of values in each CSV record to fields in the Go type.
 //
@@ -184,7 +184,7 @@ func Unmarshal(data []byte, v interface{}) error {
 //
 // The canonical way of using ReadLine is (error handling omitted)
 //
-//    	dec := csv.NewDecoder(r)
+//      dec := csv.NewDecoder(r)
 //      line, _ := dec.ReadLine()
 //      for {
 //          line, err = dec.ReadLine()
