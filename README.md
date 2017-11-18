@@ -1,8 +1,8 @@
 go-csv
 ===========
 
-[![Build Status](https://travis-ci.org/echa/go-csv.svg?branch=master)](https://travis-ci.org/echa/go-csv)
-[![GoDoc](https://godoc.org/github.com/echa/go-csv/timecode?status.svg)](https://godoc.org/github.com/echa/go-csv)
+[![Build Status](https://travis-ci.org/trimmer-io/go-csv.svg?branch=master)](https://travis-ci.org/trimmer-io/go-csv)
+[![GoDoc](https://godoc.org/github.com/trimmer-io/go-csv/timecode?status.svg)](https://godoc.org/github.com/trimmer-io/go-csv)
 
 
 go-csv is a [Go](http://golang.org/) package for encoding and decoding CSV-structured textfiles to/from arbitrary Go types.
@@ -26,15 +26,15 @@ Features
 Documentation
 -------------
 
-- [API Reference](http://godoc.org/github.com/echa/go-csv)
-- [FAQ](https://github.com/echa/go-csv/wiki/FAQ)
+- [API Reference](http://godoc.org/trimmer.io/go-csv)
+- [FAQ](https://github.com/trimmer-io/go-csv/wiki/FAQ)
 
 Installation
 ------------
 
 Install go-csv using the "go get" command:
 
-    go get github.com/echa/go-csv
+    go get trimmer.io/go-csv
 
 The Go distribution is go-csv's only dependency.
 
@@ -46,7 +46,7 @@ Examples
 This example assumes your CSV file contains a header who's values match the struct tags defined on the Go type FrameInfo. CSV fields that are undefined in the type are ignored.
 
 ```
-import "github.com/echa/go-csv"
+import "trimmer.io/go-csv"
 
 type FrameInfo struct {
 	ActiveImageHeight  int      `csv:"Active Image Height"`
@@ -163,7 +163,7 @@ func ReadStream(r io.Reader) error {
 Contributing
 ------------
 
-See [CONTRIBUTING.md](https://github.com/echa/go-csv/blob/master/.github/CONTRIBUTING.md).
+See [CONTRIBUTING.md](https://github.com/trimmer-io/go-csv/blob/master/.github/CONTRIBUTING.md).
 
 
 License
