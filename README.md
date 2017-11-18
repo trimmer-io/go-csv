@@ -2,7 +2,7 @@ go-csv
 ===========
 
 [![Build Status](https://travis-ci.org/trimmer-io/go-csv.svg?branch=master)](https://travis-ci.org/trimmer-io/go-csv)
-[![GoDoc](https://godoc.org/github.com/trimmer-io/go-csv/timecode?status.svg)](https://godoc.org/github.com/trimmer-io/go-csv)
+[![GoDoc](https://godoc.org/trimmer.io/go-csv/timecode?status.svg)](https://godoc.org/trimmer.io/go-csv)
 
 
 go-csv is a [Go](http://golang.org/) package for encoding and decoding CSV-structured textfiles to/from arbitrary Go types.
