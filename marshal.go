@@ -196,7 +196,6 @@ func (e *Encoder) output(fields []string) error {
 }
 
 func (e *Encoder) marshal(val reflect.Value) error {
-
 	// Load value from interface
 	val = derefValue(val)
 
@@ -292,7 +291,6 @@ func (e *Encoder) findStructField(val reflect.Value, name string) (*fieldInfo, r
 	any := -1
 	// pick the correct field based on name and flags
 	for i, v := range tinfo.fields {
-
 		// save `any` field in case
 		if v.flags&fAny > 0 {
 			any = i

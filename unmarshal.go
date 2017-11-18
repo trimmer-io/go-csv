@@ -220,7 +220,6 @@ func (d *Decoder) ReadLine() (string, error) {
 // See the documentation for Unmarshal for details about the conversion of CSV records
 // into a Go value.
 func (d *Decoder) Decode(v interface{}) error {
-
 	val := reflect.ValueOf(v)
 	if val.Kind() != reflect.Ptr {
 		return fmt.Errorf("csv: non-pointer passed to Unmarshal")
@@ -309,7 +308,6 @@ func (d *Decoder) DecodeRecord(v interface{}, line string) error {
 }
 
 func (d *Decoder) unmarshal(val reflect.Value, line string) error {
-
 	// split line into tokens
 	tokens := strings.Split(line, string(d.sep))
 
@@ -336,7 +334,6 @@ func (d *Decoder) unmarshal(val reflect.Value, line string) error {
 
 	// map struct fields
 	for i, fName := range d.headerKeys {
-
 		if d.trim {
 			// remove surrounding spaces
 			tokens[i] = strings.TrimSpace(tokens[i])
@@ -402,7 +399,6 @@ func (d *Decoder) findStructField(val reflect.Value, name string) (*fieldInfo, r
 	any := -1
 	// pick the correct field based on name and flags
 	for i, v := range tinfo.fields {
-
 		// save `any` field in case
 		if v.flags&fAny > 0 {
 			any = i
