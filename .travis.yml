@@ -3,11 +3,11 @@ sudo: false
 go_import_path: trimmer.io/go-csv
 
 go:
-  - 1.6
-  - 1.7
-  - 1.8
-  - 1.9
-  - 1.10
+  - "1.6"
+  - "1.7"
+  - "1.8"
+  - "1.9"
+  - "1.10"
   - tip
 
 script:
