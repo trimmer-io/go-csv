@@ -224,57 +224,86 @@ func (e *Encoder) marshal(val reflect.Value) error {
 
 	// map struct fields
 	tokens := make([]string, len(e.headerKeys))
-	for i, fName := range e.headerKeys {
-		// init with empty string
-		tokens[i] = ""
 
-		finfo, f := e.findStructField(val, fName)
-		if finfo == nil || !f.IsValid() {
-			continue
-		}
-
-		if finfo.flags&fElement == 0 {
-			continue
-		}
-
-		fv := finfo.value(val)
-
-		if (fv.Kind() == reflect.Interface || fv.Kind() == reflect.Ptr) && fv.IsNil() {
-			continue
-		}
-
-		// try text marshalers first
-		if fv.CanInterface() && fv.Type().Implements(textMarshalerType) {
-			if b, err := fv.Interface().(encoding.TextMarshaler).MarshalText(); err != nil {
-				return err
-			} else {
-				tokens[i] = string(b)
+	// work with []string, []interface{} and other slices with types than
+	// convert to string
+	if val.Kind() == reflect.Slice && val.Len() == len(e.headerKeys) {
+		for i := 0; i < val.Len(); i++ {
+			f := val.Index(i)
+			if f.IsNil() {
+				continue
 			}
-			continue
+			if f.Type().Kind() == reflect.Interface {
+				f = f.Elem()
+			}
+			if f.Type().Kind() == reflect.Ptr && !f.IsNil() {
+				f = f.Elem()
+			}
+			if !f.IsValid() {
+				continue
+			}
+			s, b, err := marshalSimple(f.Type(), f)
+			if err != nil {
+				return err
+			}
+			if b != nil {
+				s = string(b)
+			}
+			tokens[i] = s
 		}
+	} else {
+		for i, fName := range e.headerKeys {
+			// init with empty string
+			tokens[i] = ""
 
-		if f.CanAddr() {
-			pv := f.Addr()
-			if pv.CanInterface() && pv.Type().Implements(textMarshalerType) {
-				if b, err := pv.Interface().(encoding.TextMarshaler).MarshalText(); err != nil {
+			finfo, f := e.findStructField(val, fName)
+			if finfo == nil || !f.IsValid() {
+				continue
+			}
+
+			if finfo.flags&fElement == 0 {
+				continue
+			}
+
+			fv := finfo.value(val)
+
+			if (fv.Kind() == reflect.Interface || fv.Kind() == reflect.Ptr) && fv.IsNil() {
+				continue
+			}
+
+			// try text marshalers first
+			if fv.CanInterface() && fv.Type().Implements(textMarshalerType) {
+				if b, err := fv.Interface().(encoding.TextMarshaler).MarshalText(); err != nil {
 					return err
 				} else {
 					tokens[i] = string(b)
 				}
+				continue
 			}
-		}
-		s, b, err := marshalSimple(f.Type(), f)
-		if err != nil {
-			return err
-		}
-		if b != nil {
-			s = string(b)
-		}
-		tokens[i] = s
 
-		// trim
-		if e.trim {
-			tokens[i] = strings.TrimSpace(tokens[i])
+			if f.CanAddr() {
+				pv := f.Addr()
+				if pv.CanInterface() && pv.Type().Implements(textMarshalerType) {
+					if b, err := pv.Interface().(encoding.TextMarshaler).MarshalText(); err != nil {
+						return err
+					} else {
+						tokens[i] = string(b)
+					}
+				}
+			}
+			s, b, err := marshalSimple(f.Type(), f)
+			if err != nil {
+				return err
+			}
+			if b != nil {
+				s = string(b)
+			}
+			tokens[i] = s
+
+			// trim
+			if e.trim {
+				tokens[i] = strings.TrimSpace(tokens[i])
+			}
 		}
 	}
 	return e.output(tokens)
@@ -323,7 +352,12 @@ func (e *Encoder) findStructField(val reflect.Value, name string) (*fieldInfo, r
 	return finfo, v
 }
 
+var stringerType = reflect.TypeOf((*fmt.Stringer)(nil)).Elem()
+
 func marshalSimple(typ reflect.Type, val reflect.Value) (string, []byte, error) {
+	if typ.Implements(stringerType) {
+		return val.Interface().(fmt.Stringer).String(), nil, nil
+	}
 	switch val.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		return strconv.FormatInt(val.Int(), 10), nil, nil
