@@ -324,12 +324,12 @@ func (d *Decoder) unmarshal(val reflect.Value, line string) error {
 		case strings.HasPrefix(v, Wrapper):
 			merged = v[1:]
 		case strings.HasSuffix(v, Wrapper):
-			merged = strings.Join([]string{merged, v[:len(v)-1]}, string(d.sep)+" ")
+			merged = strings.Join([]string{merged, v[:len(v)-1]}, string(d.sep))
 			combined = append(combined, merged)
 			merged = ""
 		default:
 			if merged != "" {
-				merged = strings.Join([]string{merged, v}, string(d.sep)+" ")
+				merged = strings.Join([]string{merged, v}, string(d.sep))
 			} else {
 				combined = append(combined, v)
 			}
