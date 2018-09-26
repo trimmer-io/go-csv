@@ -48,6 +48,7 @@ import (
 const (
 	Separator = ','
 	Comment   = '#'
+	Wrapper   = "\""
 )
 
 type DecodeError struct {
@@ -131,7 +132,7 @@ func (d *Decoder) Comment(c rune) *Decoder {
 }
 
 // Trim controls if the Decoder will trim whitespace surrounding header fields
-// and record fields befor processing them.
+// and records before processing them.
 func (d *Decoder) Trim(t bool) *Decoder {
 	d.trim = t
 	return d
@@ -311,6 +312,31 @@ func (d *Decoder) unmarshal(val reflect.Value, line string) error {
 	// split line into tokens
 	tokens := strings.Split(line, string(d.sep))
 
+	// combine tokens between ""
+	combined := make([]string, 0, len(tokens))
+	var merged string
+	for _, v := range tokens {
+		// unquote and merge multiple tokens, when separated
+		switch true {
+		case strings.HasPrefix(v, Wrapper) && strings.HasSuffix(v, Wrapper):
+			combined = append(combined, v[1:len(v)])
+			merged = ""
+		case strings.HasPrefix(v, Wrapper):
+			merged = v[1:]
+		case strings.HasSuffix(v, Wrapper):
+			merged = strings.Join([]string{merged, v[:len(v)-1]}, string(d.sep)+" ")
+			combined = append(combined, merged)
+			merged = ""
+		default:
+			if merged != "" {
+				merged = strings.Join([]string{merged, v}, string(d.sep)+" ")
+			} else {
+				combined = append(combined, v)
+			}
+		}
+	}
+	tokens = combined
+
 	if len(tokens) != len(d.headerKeys) {
 		return &DecodeError{d.lineNo, 0, "number of fields does not match header", nil}
 	}
@@ -335,12 +361,7 @@ func (d *Decoder) unmarshal(val reflect.Value, line string) error {
 	// map struct fields
 	for i, fName := range d.headerKeys {
 		if d.trim {
-			// remove surrounding spaces
 			tokens[i] = strings.TrimSpace(tokens[i])
-
-			// unquote
-			tokens[i] = strings.TrimPrefix(tokens[i], "\"")
-			tokens[i] = strings.TrimSuffix(tokens[i], "\"")
 		}
 
 		// remove double quotes
