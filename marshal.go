@@ -73,6 +73,12 @@ func (e *Encoder) Trim(t bool) *Encoder {
 	return e
 }
 
+// HeaderWritten returns true if the CSV header has already been written
+// to the output.
+func (e *Encoder) HeaderWritten() bool {
+	return len(e.headerKeys) > 0
+}
+
 // Allow using the encoder as io.Writer
 func (e *Encoder) Write(p []byte) (n int, err error) {
 	return e.w.Write(p)
