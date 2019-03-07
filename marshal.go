@@ -17,6 +17,7 @@ package csv // import "trimmer.io/go-csv"
 import (
 	"bytes"
 	"encoding"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"reflect"
@@ -398,7 +399,7 @@ func marshalSimple(typ reflect.Type, val reflect.Value) (string, []byte, error) 
 			break
 		}
 		// []byte
-		return "", hex.EncodeToString(val.Bytes()), nil
+		return hex.EncodeToString(val.Bytes()), nil, nil
 	}
 	return "", nil, fmt.Errorf("no method for marshalling type %s (%v)", typ.String(), val.Kind())
 }
