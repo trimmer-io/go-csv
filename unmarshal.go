@@ -38,6 +38,7 @@ import (
 	"bufio"
 	"bytes"
 	"encoding"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"reflect"
@@ -535,7 +536,11 @@ func setValue(dst reflect.Value, src, fName string) error {
 	case reflect.Slice:
 		// make sure it's a byte slice
 		if dst.Type().Elem().Kind() == reflect.Uint8 {
-			dst.SetBytes([]byte(src))
+			if buf, err := hex.DecodeString(src); err == nil {
+				dst.SetBytes(buf)
+			} else {
+				dst.SetBytes([]byte(src))
+			}
 		}
 	default:
 		return fmt.Errorf("no method for unmarshaling type %s", dst0.Type().String())
