@@ -73,6 +73,11 @@ func (e *Encoder) Trim(t bool) *Encoder {
 	return e
 }
 
+// Allow using the encoder as io.Writer
+func (e *Encoder) Write(p []byte) (n int, err error) {
+	return e.w.Write(p)
+}
+
 // Marshal returns the CSV encoding of slice v.
 //
 // When the slice's element type implements the Marshaler interface, MarshalCSV
