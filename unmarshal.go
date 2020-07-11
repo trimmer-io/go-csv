@@ -188,6 +188,7 @@ func Unmarshal(data []byte, v interface{}) error {
 //
 //      dec := csv.NewDecoder(r)
 //      line, _ := dec.ReadLine()
+//      head, _ := dec.DecodeHeader(line)
 //      for {
 //          line, err = dec.ReadLine()
 //          if err != nil {
@@ -262,7 +263,7 @@ func (d *Decoder) Decode(v interface{}) error {
 
 		// process header when not disabled
 		if len(d.headerKeys) == 0 && d.readHeader {
-			if err := d.DecodeHeader(line); err != nil {
+			if _, err := d.DecodeHeader(line); err != nil {
 				return err
 			}
 			continue
@@ -284,19 +285,19 @@ func (d *Decoder) Decode(v interface{}) error {
 	return nil
 }
 
-// DecodeHeader reads CSV head fields from header and stores them as internal
+// DecodeHeader reads CSV head fields from line and stores them as internal
 // Decoder state required to map CSV records later on.
-func (d *Decoder) DecodeHeader(header string) error {
-	d.headerKeys = strings.Split(header, string(d.sep))
+func (d *Decoder) DecodeHeader(line string) ([]string, error) {
+	d.headerKeys = strings.Split(line, string(d.sep))
 	if len(d.headerKeys) == 0 {
-		return fmt.Errorf("csv: empty header")
+		return nil, fmt.Errorf("csv: empty header")
 	}
 	if d.trim {
 		for i, v := range d.headerKeys {
 			d.headerKeys[i] = strings.TrimSpace(v)
 		}
 	}
-	return nil
+	return d.headerKeys, nil
 }
 
 // DecodeRecord extracts CSV record fields from line and stores them into

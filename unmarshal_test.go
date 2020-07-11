@@ -325,7 +325,7 @@ func TestUnmarshalRecords(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	if err = dec.DecodeHeader(line); err != nil {
+	if _, err = dec.DecodeHeader(line); err != nil {
 		t.Error(err)
 		return
 	}
@@ -450,7 +450,7 @@ func TestUnmarshalToMap(t *testing.T) {
 		t.Error(err)
 		return
 	}
-	if err = dec.DecodeHeader(line); err != nil {
+	if _, err = dec.DecodeHeader(line); err != nil {
 		t.Error(err)
 		return
 	}
