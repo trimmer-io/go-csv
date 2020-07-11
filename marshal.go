@@ -23,6 +23,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"unicode"
 )
 
 // Marshaler is the interface implemented by types that can marshal themselves
@@ -196,6 +197,13 @@ func (e *Encoder) buildHeader(fields []string, val reflect.Value) error {
 }
 
 func (e *Encoder) output(fields []string) error {
+	// quote strings with whitespace and or separator
+	for i, v := range fields {
+		if !containsWhitespace(v) && !strings.Contains(v, e.sep) {
+			continue
+		}
+		fields[i] = strings.Join([]string{Wrapper, v, Wrapper}, "")
+	}
 	line := strings.Join(fields, string(e.sep))
 	if _, err := e.w.Write([]byte(line)); err != nil {
 		return fmt.Errorf("csv: %v", err)
@@ -205,6 +213,15 @@ func (e *Encoder) output(fields []string) error {
 	}
 	return nil
 
+}
+
+func containsWhitespace(s string) bool {
+	for _, v := range s {
+		if unicode.IsSpace(v) {
+			return true
+		}
+	}
+	return false
 }
 
 func (e *Encoder) marshal(val reflect.Value) error {

@@ -320,16 +320,29 @@ func (d *Decoder) unmarshal(val reflect.Value, line string) error {
 	for _, v := range tokens {
 		// unquote and merge multiple tokens, when separated
 		switch true {
-		case strings.HasPrefix(v, Wrapper) && strings.HasSuffix(v, Wrapper):
+		case len(v) == 1 && strings.HasPrefix(v, Wrapper):
+			// (1) .. ,",", .. (2) .. ," text,", ..
+			if merged == "" {
+				merged += string(d.sep)
+			} else {
+				merged += string(d.sep)
+				combined = append(combined, merged)
+				merged = ""
+			}
+		case len(v) >= 2 && strings.HasPrefix(v, Wrapper) && strings.HasSuffix(v, Wrapper):
+			// (1) .. ,"", .. (2) ..," text text ", ..
 			combined = append(combined, v[1:len(v)])
 			merged = ""
 		case strings.HasPrefix(v, Wrapper):
+			// .. ," text, more text", .. (1st part)
 			merged = v[1:]
 		case strings.HasSuffix(v, Wrapper):
+			// .. ," text, more text", .. (2nd part)
 			merged = strings.Join([]string{merged, v[:len(v)-1]}, string(d.sep))
 			combined = append(combined, merged)
 			merged = ""
 		default:
+			// .. ," text, more, text", .. (middle part)
 			if merged != "" {
 				merged = strings.Join([]string{merged, v}, string(d.sep))
 			} else {
