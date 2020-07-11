@@ -242,13 +242,16 @@ func (e *Encoder) marshal(val reflect.Value) error {
 	if val.Kind() == reflect.Slice && val.Len() == len(e.headerKeys) {
 		for i := 0; i < val.Len(); i++ {
 			f := val.Index(i)
-			if f.IsNil() {
-				continue
-			}
 			if f.Type().Kind() == reflect.Interface {
+				if f.IsNil() {
+					continue
+				}
 				f = f.Elem()
 			}
-			if f.Type().Kind() == reflect.Ptr && !f.IsNil() {
+			if f.Type().Kind() == reflect.Ptr {
+				if f.IsNil() {
+					continue
+				}
 				f = f.Elem()
 			}
 			if !f.IsValid() {
