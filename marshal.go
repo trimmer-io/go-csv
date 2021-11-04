@@ -12,7 +12,7 @@
 // License for the specific language governing permissions and limitations
 // under the License.
 
-package csv // import "trimmer.io/go-csv"
+package csv
 
 import (
 	"bytes"

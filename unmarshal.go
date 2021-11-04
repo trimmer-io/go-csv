@@ -31,7 +31,6 @@
 // processing. Inside a quoted field a double quote may be escaped by a preceeding
 // second double quote which will be removed during parsing.
 //
-// Quoted fields containing commas and line breaks are not supported yet.
 package csv
 
 import (
