@@ -1,3 +1,3 @@
-module github.com/trimmer-io/go-csv
+module github.com/echa/go-csv
 
 go 1.17
