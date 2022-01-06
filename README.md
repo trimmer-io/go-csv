@@ -125,7 +125,7 @@ func ReadStream(r io.Reader) error {
 	if err != nil {
 		return err
 	}
-	if err = dec.DecodeHeader(line); err != nil {
+	if _, err = dec.DecodeHeader(line); err != nil {
 		return err
 	}
 
