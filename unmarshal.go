@@ -30,7 +30,6 @@
 // in which case the surrounding double quotes '"' (0x22) are removed before
 // processing. Inside a quoted field a double quote may be escaped by a preceeding
 // second double quote which will be removed during parsing.
-//
 package csv
 
 import (
@@ -164,15 +163,14 @@ func (d *Decoder) Buffer(buf []byte) *Decoder {
 // is called for each record. Otherwise, CSV record fields are assigned to the
 // struct fields with a corresponding name in their csv struct tag.
 //
-//     // CSV field "name" will be assigned to struct field "Field".
-//     Field int64 `csv:"name"`
+//	// CSV field "name" will be assigned to struct field "Field".
+//	Field int64 `csv:"name"`
 //
-//     // Field is used to store all unmapped CSV fields.
-//     Field map[string]string `csv:",any"`
+//	// Field is used to store all unmapped CSV fields.
+//	Field map[string]string `csv:",any"`
 //
 // A special flag 'any' can be used on a map or any other field type implementing
 // TextUnmarshaler interface to capture all unmapped CSV fields of a record.
-//
 func Unmarshal(data []byte, v interface{}) error {
 	return NewDecoder(bytes.NewReader(data)).Decode(v)
 }
@@ -185,19 +183,19 @@ func Unmarshal(data []byte, v interface{}) error {
 //
 // The canonical way of using ReadLine is (error handling omitted)
 //
-//      dec := csv.NewDecoder(r)
-//      line, _ := dec.ReadLine()
-//      head, _ := dec.DecodeHeader(line)
-//      for {
-//          line, err = dec.ReadLine()
-//          if err != nil {
-//              return err
-//          }
-//          if line == "" {
-//              break
-//          }
-//          // process the next record here
-//      }
+//	dec := csv.NewDecoder(r)
+//	line, _ := dec.ReadLine()
+//	head, _ := dec.DecodeHeader(line)
+//	for {
+//	    line, err = dec.ReadLine()
+//	    if err != nil {
+//	        return err
+//	    }
+//	    if line == "" {
+//	        break
+//	    }
+//	    // process the next record here
+//	}
 func (d *Decoder) ReadLine() (string, error) {
 	for d.s.Scan() {
 		line := d.s.Text()
@@ -324,13 +322,12 @@ func (d *Decoder) unmarshal(val reflect.Value, line string) error {
 			if merged == "" {
 				merged += string(d.sep)
 			} else {
-				merged += string(d.sep)
 				combined = append(combined, merged)
 				merged = ""
 			}
 		case len(v) >= 2 && strings.HasPrefix(v, Wrapper) && strings.HasSuffix(v, Wrapper):
 			// (1) .. ,"", .. (2) ..," text text ", ..
-			combined = append(combined, v[1:len(v)])
+			combined = append(combined, v[1:len(v)-1])
 			merged = ""
 		case strings.HasPrefix(v, Wrapper):
 			// .. ," text, more text", .. (1st part)
