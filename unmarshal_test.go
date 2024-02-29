@@ -79,10 +79,14 @@ func (x SpecialStruct) String() string {
 const (
 	CsvWithHeader = `s,i,f,b
 Hello,42,23.45,true`
-	CsvWithoutHeader = `Hello,true,42,23.45`
-	CsvWhitespace    = `  Hello  ,  true   ,  42  ,  23.45`
-	CsvSemicolon     = `Hello;true;42;23.45`
-	CsvComment       = `# Comment line
+	CsvWithoutHeader       = `Hello,true,42,23.45`
+	CsvWhitespace          = `  Hello  ,  true   ,  42  ,  23.45`
+	CsvSemicolon           = `Hello;true;42;23.45`
+	CsvQuotedString        = `"Hello",true,42,23.45`
+	CsvQuotedWhiteSpace    = `"Hello World",false,43,24.56`
+	CsvQuotedSeparator     = `"Hello,World",false,43,24.56`
+	CsvQuotedSeparatorOnly = `",",false,43,24.56`
+	CsvComment             = `# Comment line
 Hello,true,42,23.45
 #
 # another comment
@@ -108,6 +112,8 @@ var (
 	A1 = A{"Hello", true, 42, 23.45}
 	A2 = A{"Hello World", false, 43, 24.56}
 	A3 = A{"   Hello   ", true, 42, 23.45}
+	A4 = A{"Hello,World", false, 43, 24.56}
+	A5 = A{",", false, 43, 24.56}
 	E1 = A{"", true, 42, 23.45}
 	E2 = A{"Hello", false, 42, 23.45}
 	E3 = A{"Hello", true, 0, 23.45}
@@ -368,6 +374,62 @@ func TestUnmarshalWithSeparator(t *testing.T) {
 		return
 	}
 	CheckA(t, a[0], A1)
+}
+
+func TestUnmarshalQuotedString(t *testing.T) {
+	r := bytes.NewReader([]byte(CsvQuotedString))
+	dec := NewDecoder(r).Header(false)
+	a := make([]*A, 0)
+	if err := dec.Decode(&a); err != nil {
+		t.Error(err)
+	}
+	if len(a) != 1 {
+		t.Errorf("invalid record count, got=%d expected=%d", len(a), 1)
+		return
+	}
+	CheckA(t, a[0], A1)
+}
+
+func TestUnmarshalQuotedWhiteSpace(t *testing.T) {
+	r := bytes.NewReader([]byte(CsvQuotedWhiteSpace))
+	dec := NewDecoder(r).Header(false)
+	a := make([]*A, 0)
+	if err := dec.Decode(&a); err != nil {
+		t.Error(err)
+	}
+	if len(a) != 1 {
+		t.Errorf("invalid record count, got=%d expected=%d", len(a), 1)
+		return
+	}
+	CheckA(t, a[0], A2)
+}
+
+func TestUnmarshalQuotedSeparator(t *testing.T) {
+	r := bytes.NewReader([]byte(CsvQuotedSeparator))
+	dec := NewDecoder(r).Header(false)
+	a := make([]*A, 0)
+	if err := dec.Decode(&a); err != nil {
+		t.Error(err)
+	}
+	if len(a) != 1 {
+		t.Errorf("invalid record count, got=%d expected=%d", len(a), 1)
+		return
+	}
+	CheckA(t, a[0], A4)
+}
+
+func TestUnmarshalQuotedSeparatorOnly(t *testing.T) {
+	r := bytes.NewReader([]byte(CsvQuotedSeparatorOnly))
+	dec := NewDecoder(r).Header(false)
+	a := make([]*A, 0)
+	if err := dec.Decode(&a); err != nil {
+		t.Error(err)
+	}
+	if len(a) != 1 {
+		t.Errorf("invalid record count, got=%d expected=%d", len(a), 1)
+		return
+	}
+	CheckA(t, a[0], A5)
 }
 
 func TestUnmarshalWithComments(t *testing.T) {
