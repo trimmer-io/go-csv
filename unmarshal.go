@@ -288,6 +288,8 @@ func (d *Decoder) Decode(v interface{}) error {
 // Decoder state required to map CSV records later on.
 func (d *Decoder) DecodeHeader(line string) ([]string, error) {
 	d.headerKeys = strings.Split(line, string(d.sep))
+	d.headerKeys = maybeTrimQuotes(d.headerKeys)
+
 	if len(d.headerKeys) == 0 {
 		return nil, fmt.Errorf("csv: empty header")
 	}
@@ -559,4 +561,18 @@ func setValue(dst reflect.Value, src, fName string) error {
 		return fmt.Errorf("no method for unmarshaling type %s", dst0.Type().String())
 	}
 	return nil
+}
+
+func maybeTrimQuotes(tokens []string) []string {
+	trimmed := make([]string, 0, len(tokens))
+	for _, s := range tokens {
+		if len(s) > 0 && s[0] == '"' {
+			s = s[1:]
+		}
+		if len(s) > 0 && s[len(s)-1] == '"' {
+		    s = s[:len(s)-1]
+		}
+		trimmed = append(trimmed, s)
+	}
+	return trimmed
 }

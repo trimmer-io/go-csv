@@ -79,6 +79,8 @@ func (x SpecialStruct) String() string {
 const (
 	CsvWithHeader = `s,i,f,b
 Hello,42,23.45,true`
+	CsvWithQuotedHeader = `"s","i","f","b"
+Hello,42,23.45,true`
 	CsvWithoutHeader = `Hello,true,42,23.45`
 	CsvWhitespace    = `  Hello  ,  true   ,  42  ,  23.45`
 	CsvSemicolon     = `Hello;true;42;23.45`
@@ -266,6 +268,18 @@ func CheckMap(t *testing.T, m map[string]string, b A) {
 func TestUnmarshalFromByte(t *testing.T) {
 	a := make([]*A, 0)
 	if err := Unmarshal([]byte(CsvWithHeader), &a); err != nil {
+		t.Error(err)
+	}
+	if len(a) != 1 {
+		t.Errorf("invalid record count, got=%d expected=%d", len(a), 1)
+		return
+	}
+	CheckA(t, a[0], A1)
+}
+
+func TestUnmarshalQuotedFromByte(t *testing.T) {
+	a := make([]*A, 0)
+	if err := Unmarshal([]byte(CsvWithQuotedHeader), &a); err != nil {
 		t.Error(err)
 	}
 	if len(a) != 1 {
