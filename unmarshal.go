@@ -330,7 +330,7 @@ func (d *Decoder) unmarshal(val reflect.Value, line string) error {
 			}
 		case len(v) >= 2 && strings.HasPrefix(v, Wrapper) && strings.HasSuffix(v, Wrapper):
 			// (1) .. ,"", .. (2) ..," text text ", ..
-			combined = append(combined, v[1:len(v)])
+			combined = append(combined, v[1:len(v)-1])
 			merged = ""
 		case strings.HasPrefix(v, Wrapper):
 			// .. ," text, more text", .. (1st part)

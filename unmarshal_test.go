@@ -80,6 +80,7 @@ const (
 	CsvWithHeader = `s,i,f,b
 Hello,42,23.45,true`
 	CsvWithoutHeader = `Hello,true,42,23.45`
+	CsvQuoted        = `"Hello",true,42,23.45`
 	CsvWhitespace    = `  Hello  ,  true   ,  42  ,  23.45`
 	CsvSemicolon     = `Hello;true;42;23.45`
 	CsvComment       = `# Comment line
@@ -305,6 +306,20 @@ func TestUnmarshalNoPtr(t *testing.T) {
 
 func TestUnmarshalWithoutHeader(t *testing.T) {
 	r := bytes.NewReader([]byte(CsvWithoutHeader))
+	dec := NewDecoder(r).Header(false)
+	a := make([]*A, 0)
+	if err := dec.Decode(&a); err != nil {
+		t.Error(err)
+	}
+	if len(a) != 1 {
+		t.Errorf("invalid record count, got=%d expected=%d", len(a), 1)
+		return
+	}
+	CheckA(t, a[0], A1)
+}
+
+func TestUnmarshalQuoted(t *testing.T) {
+	r := bytes.NewReader([]byte(CsvQuoted))
 	dec := NewDecoder(r).Header(false)
 	a := make([]*A, 0)
 	if err := dec.Decode(&a); err != nil {
